@@ -1,12 +1,9 @@
 import io
 import re
 import os.path
-import datetime
 import urllib.parse
-from io import StringIO, BytesIO
 
 from flask import (
-    render_template,
     send_file,
     url_for,
     redirect,
@@ -16,7 +13,6 @@ from flask import (
     make_response,
 )
 
-from .forms import WordForm
 from . import mdict, get_mdict, get_db, Config
 from . import helper
 
@@ -39,6 +35,151 @@ regex_href_no_schema = re.compile(
 regex_css = re.compile(r'(<link.*? )(href)(=".+?>)')
 # js
 regex_js = re.compile(r'(<script.*? )(src)(=".+?>)')
+
+
+@mdict.route("/")
+def index():
+    return jsonify(
+        [
+            {
+                "title": "Search Suggestions",
+                "description": "Search for word suggestions",
+                "href": url_for(".query_part", part=""),
+                "examples": [
+                    {
+                        "request": url_for(".query_part", part="appl"),
+                        "response": """{
+"suggestion": [
+"Applied",
+"applaud",
+"applause",
+"apple",
+"apple pie",
+"apple sauce",
+"apple seed",
+"apple tree",
+"apple-pie",
+"apple-sauce",
+"apple-seed",
+"apple-tree",
+"applejack",
+"applet",
+"appliance",
+"applicability",
+"applicable",
+"applicant",
+"application",
+"applicator",
+"applied",
+"applique",
+"apply"
+]
+}""",
+                    }
+                ],
+            },
+            {
+                "title": "Search Word",
+                "description": "Search for word definition",
+                "href": url_for(".query_word_lite", word=""),
+                "examples": [
+                    {
+                        "request": url_for(".query_word_lite", word="apple"),
+                        "response": """<div id="class_FA96C0A7-B3C9-33CF-89DB-6FD82264DD07">
+    <div class="mdict">
+        <link rel="stylesheet" href="http://127.0.0.1:5000/uuid_FA96C0A7-B3C9-33CF-89DB-6FD82264DD07/resource/css/reset.css">
+        <link rel="stylesheet" href="http://127.0.0.1:5000/uuid_FA96C0A7-B3C9-33CF-89DB-6FD82264DD07/resource/css/mdict.css">
+        <div class="mdict-title">
+            <img style="height:16px !important;
+                    border-radius:.25rem !important;
+                    vertical-align:baseline !important" src="http://127.0.0.1:5000/uuid_FA96C0A7-B3C9-33CF-89DB-6FD82264DD07/resource/logo.ico"/>Online Etymology DictionaryNew
+
+        </div>
+        <li>
+            <link rel="stylesheet" href="http://127.0.0.1:5000/uuid_FA96C0A7-B3C9-33CF-89DB-6FD82264DD07/resource/Online Etymology DictionaryNew.css">
+            <div class="word--C9UPa">
+                <div>
+                    <h1 class="word__name--TTbAA" title="Origin and meaning of apple">apple (n.)</h1>
+                    <section class="word__defination--2q7ZH">
+                        <object>
+                            Old English <span class="foreign">æppel</span>
+                            &quot;apple; any kind of fruit; fruit in general,&quot;from Proto-Germanic <span class="foreign">*ap(a)laz</span>
+                            (source also of Old Saxon, Old Frisian, Dutch <span class="foreign">appel</span>
+                            , Old Norse <span class="foreign">eple</span>
+                            , Old High German <span class="foreign">apful</span>
+                            , German <span class="foreign">Apfel</span>
+                            ), from PIE <span class="foreign">*ab(e)l-</span>
+                            &quot;apple &quot;(source also of Gaulish <span class="foreign">avallo</span>
+                            &quot;fruit;&quot;Old Irish <span class="foreign">ubull</span>
+                            , Lithuanian <span class="foreign">obuolys</span>
+                            , Old Church Slavonic <span class="foreign">jabloko</span>
+                            &quot;apple &quot;), but the exact relation and original sense of these is uncertain (compare <span class="crossreference">melon</span>
+                            ).
+<blockquote>A roted eppel amang þe holen, makeþ rotie þe yzounde. [&quot;Ayenbite of Inwit,&quot;1340]
+</blockquote>
+                            In Middle English and as late as 17c., it was a generic term for all fruit other than berries but including nuts (such as Old English <span class="foreign">fingeræppla</span>
+                            &quot;dates,&quot;literally &quot;finger-apples;&quot;Middle English <span class="foreign">appel of paradis</span>
+                            &quot;banana,&quot;c. 1400). Hence its grafting onto the unnamed &quot;fruit of the forbidden tree &quot;in Genesis. Cucumbers, in one Old English work, are <span class="foreign">eorþæppla</span>
+                            , literally &quot;earth-apples &quot;(compare French <span class="foreign">pomme de terre</span>
+                            &quot;potato,&quot;literally &quot;earth-apple;&quot;see also <span class="crossreference">melon</span>
+                            ). French <span class="foreign">pomme</span>
+                            is from Latin <span class="foreign">pomum</span>
+                            &quot;apple; fruit &quot;(see <span class="crossreference">Pomona</span>
+                            ).
+<blockquote>As far as the forbidden fruit is concerned, again, the Quran does not mention it explicitly, but according to traditional commentaries it was not an apple, as believed by Christians and Jews, but wheat. [&quot;The Heart of Islam: Enduring Values for Humanity,&quot;Seyyed Hossein Nasr, 2002]
+</blockquote>
+                            <span class="foreign">Apple of Discord</span>
+                            (c. 1400) was thrown into the wedding of Thetis and Peleus by Eris (goddess of chaos and discord), who had not been invited, and inscribed <span class="foreign">kallisti</span>
+                            &quot;To the Prettiest One.&quot;Paris, elected to choose which goddess should have it, gave it to Aphrodite, offending Hera and Athene, with consequences of the Trojan War, etc.
+<br>
+                            <br>
+                            <span class="foreign">Apple of one‘s eye</span>
+                            (Old English), symbol of what is most cherished, was the pupil, supposed to be a globular solid body. <span class="foreign">Apple-polisher</span>
+                            &quot;one who curries favor &quot;first attested 1928 in student slang. The image in the phrase <span class="foreign">upset the apple cart</span>
+                            &quot;spoil the undertaking &quot;is attested from 1788. <span class="foreign">Road-apple</span>
+                            &quot;horse dropping &quot;is from 1942.
+                        </object>
+                    </section>
+                </div>
+            </div>
+            <div class="related--32LCi">
+                <h1 class="related__title--2BB_n" title="words related to apple">Related Words</h1>
+                <ul class="related__container--22iKI">
+                    <a title="Origin and meaning of applejack" data-entry-url="https://127.0.0.1:5000/query/applejack?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://applejack">
+                        <li class="related__word--3Si0N">applejack</li>
+                    </a>
+                    <a title="Origin and meaning of apple-pie" data-entry-url="https://127.0.0.1:5000/query/apple-pie?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://apple-pie">
+                        <li class="related__word--3Si0N">apple-pie</li>
+                    </a>
+                    <a title="Origin and meaning of apple-sauce" data-entry-url="https://127.0.0.1:5000/query/apple-sauce?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://apple-sauce">
+                        <li class="related__word--3Si0N">apple-sauce</li>
+                    </a>
+                    <a title="Origin and meaning of apple-seed" data-entry-url="https://127.0.0.1:5000/query/apple-seed?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://apple-seed">
+                        <li class="related__word--3Si0N">apple-seed</li>
+                    </a>
+                    <a title="Origin and meaning of apple-tree" data-entry-url="https://127.0.0.1:5000/query/apple-tree?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://apple-tree">
+                        <li class="related__word--3Si0N">apple-tree</li>
+                    </a>
+                    <a title="Origin and meaning of berry" data-entry-url="https://127.0.0.1:5000/query/berry?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://berry">
+                        <li class="related__word--3Si0N">berry</li>
+                    </a>
+                    <a title="Origin and meaning of melon" data-entry-url="https://127.0.0.1:5000/query/melon?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://melon">
+                        <li class="related__word--3Si0N">melon</li>
+                    </a>
+                    <a title="Origin and meaning of pineapple" data-entry-url="https://127.0.0.1:5000/query/pineapple?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://pineapple">
+                        <l i class="related__word--3Si0N">pineapple
+        </li>
+</a>
+<a title="Origin and meaning of Pomona" data-entry-url="https://127.0.0.1:5000/query/Pomona?uuid=FA96C0A7-B3C9-33CF-89DB-6FD82264DD07" href="entry://Pomona">
+    <li class="related__word--3Si0N">Pomona</li>
+</a>
+</ul></div></div></div><script src="http://127.0.0.1:5000/static/js/mdict.js"></script>
+""",
+                    },
+                ],
+            },
+        ]
+    )
 
 
 @mdict.route("/search/<part>")
@@ -112,260 +253,11 @@ def query_resource(uuid, resource):
         abort(404)
 
 
-@mdict.route("/uuid_<uuid>/query/<word>", methods=["GET", "POST"])
-def query_word(uuid, word):
-    """query mdict dict file: mdx"""
-    form = WordForm()
-    if form.validate_on_submit():
-        word = form.word.data
-    else:
-        form.word.data = word
-    if request.method == "GET":
-        nohistory = request.args.get("nohistory", "") == "true"
-    else:
-        nohistory = False
-    word = word.strip()
-    if uuid == "default":
-        uuid = list(get_mdict().keys())[0]
-        return redirect(url_for(".query_word", uuid=uuid, word=word))
+@mdict.route("/query/<word>")
+def query_word_lite(word):
+    default_uuid = next(iter(get_mdict()))
+    uuid = default_uuid
 
-    message = ""
-
-    item = get_mdict().get(uuid)
-    if not item:
-        abort(404)
-
-    # entry and word, load from mdx, db
-    q = item["query"]
-    if item["type"] == "app":
-        records = q(word, item)
-    else:
-        records = q.mdx_lookup(get_db(uuid), word, ignorecase=True)
-    html_content = []
-    if item["error"]:
-        html_content.append('<div style="color: red;">%s</div>' % item["error"])
-    prefix_resource = url_for(".query_resource", uuid=uuid, resource="")
-    found_word = uuid != "gtranslate" and len(records) > 0
-    count = 1
-    record_num = len(records)
-    for record in records:
-        if record.startswith("@@@LINK="):
-            record_num -= 1
-    for record in records:
-        record = helper.fix_html(record)
-        mo = regex_word_link.match(record)
-        if mo:
-            link = mo.group(2).strip()
-            if "#" in link:
-                # anchor in current page
-                link, anchor = link.split("#")
-                return redirect(
-                    url_for(".query_word", uuid=uuid, word=link, _anchor=anchor)
-                )
-            else:
-                if len(records) > 1:
-                    record = f"""<p>See also: <a data-entry-url="url_for('.query_word', uuid=uuid, word=link)" href="entry://{link}">{link}</a></p>"""
-                else:
-                    return redirect(url_for(".query_word", uuid=uuid, word=link))
-        else:
-            # for <img src="<add:resource/>..."
-            record = regex_src_schema.sub(r"\g<1>%s/\3" % prefix_resource, record)
-            # for <a href="sound://<add:resouce>..."
-            # record = regex_href_schema_sound.sub(r'\1\g<2>%s/\3' % prefix_resource, record)
-            # for <a href="<add:resource/>image.png"
-            record = regex_href_no_schema.sub(r"\g<1>%s/\2" % prefix_resource, record)
-            # remove /
-            record = regex_href_end_slash.sub(r"\1\3", record)
-            # for <a href="entry://...", alread in query word page, do not add
-            # record = regex_href_schema_entry.sub(r'\1\2\3', record)
-            # record = regex_href_schema_entry.sub(r'\1\g<2>%s/\3' % prefix_entry, record)
-            # sound://
-            record = regex_href_schema_sound.sub(
-                r' data-sound-url="%s/\3" \1\2\3' % prefix_resource, record
-            )
-            # entry://
-            query_word_url = url_for(".query_word", uuid=uuid, word="")
-            record = regex_href_schema_entry.sub(
-                r' data-entry-url="%s\3" \1\2\3' % query_word_url, record
-            )
-
-            # keep first css
-            if count > 1:
-                record = regex_css.sub(r"\1data-\2\3", record)
-            # keep last js
-            if count < record_num:
-                record = regex_js.sub(r"\1data-\2\3", record)
-            count += 1
-
-        html_content.append(record)
-    html_content = (
-        '<link rel="stylesheet" href="../resource/css/reset.css">'
-        + "<hr />".join(html_content)
-    )
-    about = item["about"]
-    # fix about html. same above
-    about = regex_href_end_slash.sub(r"\1\3", about)
-    about = regex_src_schema.sub(r"\g<1>%s/\3" % prefix_resource, about)
-    about = regex_href_schema_sound.sub(r"\1\g<2>%s/\3" % prefix_resource, about)
-
-    contents = {}
-    contents[uuid] = {
-        "title": item["title"],
-        "logo": item["logo"],
-        "about": about,
-        "content": html_content,
-        "enable": item["enable"],
-    }
-    word_meta = helper.query_word_meta(word)
-    if not nohistory and found_word:
-        helper.add_history(word)
-    history = helper.get_history()
-    print(contents)
-    return render_template(
-        "mdict/query.html",
-        form=form,
-        word=word,
-        word_meta=word_meta,
-        history=history,
-        contents=contents,
-        message=message,
-    )
-
-
-@mdict.route("/", methods=["GET", "POST"])
-def query_word_all():
-    form = WordForm()
-    if form.validate_on_submit():
-        word = form.word.data
-    else:
-        word = request.args.get("word")
-        word = word or helper.ecdict_random_word("cet4")
-        form.word.data = word
-
-    if request.method == "GET":
-        nohistory = request.args.get("nohistory", "") == "true"
-    else:
-        nohistory = False
-
-    if len(get_mdict()) <= 1:
-        message = f"没有发现词典，请将词典放入：“{Config.MDICT_DIR}”"
-    else:
-        message = ""
-
-    word = word.strip()
-    contents = {}
-    found_word = False
-    for uuid, item in get_mdict().items():
-        prefix_resource = url_for(".query_resource", uuid=uuid, resource="")
-        q = item["query"]
-        if item["enable"]:
-            if item["type"] == "app":
-                records = q(word, item)
-            else:
-                records = q.mdx_lookup(get_db(uuid), word, ignorecase=True)
-            html_content = []
-            if item["error"]:
-                html_content.append('<div style="color: red;">%s</div>' % item["error"])
-            found_word = found_word or (uuid != "gtranslate" and len(records) > 0)
-            count = 1
-            record_num = len(records)
-            for record in records:
-                if record.startswith("@@@LINK="):
-                    record_num -= 1
-            for record in records:
-                record = helper.fix_html(record)
-                mo = regex_word_link.match(record)
-                if mo:
-                    link = mo.group(2).strip()
-                    if "#" in link:
-                        link, anchor = link.split("#")
-                        record = f"""<p>See also: <a data-entry_url="{url_for(".query_word", uuid=uuid, word=link, _anchor=anchor)}" href="entry://{link}">{link}</a></p>"""
-                    else:
-                        record = f"""<p>See also: <a data-entry-url="{url_for(".query_word", uuid=uuid, word=link)}" href="entry://{link}">{link}</a></p>"""
-                else:
-                    record = regex_href_end_slash.sub(r"\1\3", record)
-                    # add dict uuid into url
-                    # for resource
-                    record = regex_src_schema.sub(
-                        r"\g<1>%s/\3" % prefix_resource, record
-                    )
-                    # record = regex_href_schema_sound.sub(r'\1\g<2>%s/\3' % prefix_resource, record)
-                    record = regex_href_no_schema.sub(
-                        r"\g<1>%s/\2" % prefix_resource, record
-                    )
-                    # for dict data
-                    # record = regex_href_schema_entry.sub(r'\1\g<2>%s/\3' % prefix_entry, record)
-
-                    # sound://
-                    record = regex_href_schema_sound.sub(
-                        r' data-sound-url="%s/\3" \1\2\3' % prefix_resource, record
-                    )
-                    # entry://
-                    query_word_url = url_for(".query_word", uuid=uuid, word="")
-                    record = regex_href_schema_entry.sub(
-                        r' data-entry-url="%s\3" \1\2\3' % query_word_url, record
-                    )
-
-                    # keep first css
-                    if count > 1:
-                        record = regex_css.sub(r"\1data-\2\3", record)
-                    # keep last js
-                    if count < record_num:
-                        record = regex_js.sub(r"\1data-\2\3", record)
-                    count += 1
-
-                html_content.append(record)
-            html_content = (
-                f'<link rel="stylesheet" href="{url_for(".query_resource", uuid=uuid, resource="css/reset.css")}">'
-                + "<hr />".join(html_content)
-            )
-        else:
-            html_content = ""
-
-        about = item["about"]
-        about = regex_src_schema.sub(r"\g<1>%s/\3" % prefix_resource, about)
-        about = regex_href_end_slash.sub(r"\1\3", about)
-        about = regex_href_schema_sound.sub(r"\1\g<2>%s/\3" % prefix_resource, about)
-        contents[uuid] = {
-            "title": item["title"],
-            "logo": item["logo"],
-            "about": about,
-            "content": html_content,
-            "enable": item["enable"],
-        }
-
-    word_meta = helper.query_word_meta(word)
-
-    if not nohistory and found_word:
-        helper.add_history(word)
-    history = helper.get_history()
-    return render_template(
-        "mdict/query.html",
-        form=form,
-        word=word,
-        word_meta=word_meta,
-        history=history,
-        contents=contents,
-        message=message,
-    )
-
-
-@mdict.route("/gtranslate/query/<word>", methods=["GET", "POST"])
-def google_translate(word):
-    trans = helper.google_translate(word)
-    return "\n".join(trans)
-
-
-@mdict.route("/meta/<word>")
-def query_word_meta(word):
-    word_meta = helper.query_word_meta(word)
-    html = []
-    html.append("<span><small>%s</small></span>" % word_meta)
-    return "\n".join(html)
-
-
-@mdict.route("/lite_<uuid>/<word>")
-def query_word_lite(uuid, word):
     def url_replace(mo):
         abs_url = mo.group(2)
         abs_url = urllib.parse.unquote(abs_url)
@@ -406,20 +298,14 @@ def query_word_lite(uuid, word):
     if not word:
         return abort(404)
     word = word.strip()
-    if uuid == "default":
-        default_uuid = next(iter(get_mdict()))
-        url = re.sub(r"/lite_default/", f"/lite_{default_uuid}/", request.url)
-        return redirect(url)
-    elif uuid == "all":
-        items = list(get_mdict().values())
-    else:
-        item = get_mdict().get(uuid)
-        if not item:
-            abort(404)
-        items = [item]
-        for f in fallback:
-            if f in get_mdict():
-                items.append(get_mdict().get(f))
+
+    item = get_mdict().get(default_uuid)
+    if not item:
+        abort(404)
+    items = [item]
+    for f in fallback:
+        if f in get_mdict():
+            items.append(get_mdict().get(f))
 
     html_contents = []
     found_word = False
@@ -544,75 +430,3 @@ def query_word_lite(uuid, word):
     if not nohistory and found_word:
         helper.add_history(word)
     return resp
-
-
-@mdict.route("/toggle/<uuid>")
-def mdict_toggle(uuid):
-    item = get_mdict().get(uuid)
-    if not item:
-        abort(404)
-    item["enable"] = not item["enable"]
-    helper.mdict_enable(uuid, item["enable"])
-    return jsonify(status="ok", uuid=uuid, enable=item["enable"])
-
-
-@mdict.route("/list/")
-def list_mdict():
-    def src_replace(mo):
-        link = mo.group(2).lstrip("/")
-        url = url_for(".query_resource", uuid=v["uuid"], resource=link, _external=True)
-        return mo.group(1) + url + mo.group(3)
-
-    uuid = request.args.get("uuid")
-    regex_img = re.compile(r'( src=")(.+?)(")')
-
-    all_mdict = []
-    for k, v in get_mdict().items():
-        if uuid and uuid != k:
-            continue
-        all_mdict.append(
-            {
-                "title": v["title"],
-                "uuid": v["uuid"],
-                "logo": url_for(
-                    ".query_resource",
-                    uuid=v["uuid"],
-                    resource=v["logo"],
-                    _external=True,
-                ),
-                "about": regex_img.sub(src_replace, v["about"]),
-                "type": v["type"],
-                "lite_url": url_for(
-                    ".query_word_lite", uuid=v["uuid"], word="", _external=True
-                ),
-                "url": url_for(".query_word", uuid=v["uuid"], word="", _external=True),
-                "enable": v["enable"],
-            }
-        )
-
-    return jsonify(all_mdict)
-
-
-@mdict.route("/clear_history/")
-def clear_history():
-    helper.clear_history()
-    return redirect(url_for(".query_word_all"))
-
-
-@mdict.route("/export_history/")
-def export_history():
-    now = datetime.datetime.now()
-    filename = f'history-{now.strftime("%Y%m%d")}.csv'
-    sio = StringIO()
-    helper.export_history(sio)
-    bio = BytesIO(sio.getvalue().encode("utf-8"))
-    bio.seek(0)
-    sio.close()
-
-    return send_file(
-        bio,
-        mimetype="text/csv",
-        as_attachment=True,
-        download_name=filename,
-        last_modified=now,
-    )
