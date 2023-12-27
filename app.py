@@ -26,6 +26,7 @@ def create_app(mdict_dir="content"):
     app.config["INDEX_DIR"] = None
     app.config["APP_NAME"] = "Flask Mdict"
     app.config["PREFERRED_URL_SCHEME"] = "http" if app.debug else "https"
+    logger.info(f" * using {app.config['PREFERRED_URL_SCHEME']}://")
 
     init_app(app, url_prefix="/")
     logger.info(" * app db: %s" % app.config["APP_DB"])
