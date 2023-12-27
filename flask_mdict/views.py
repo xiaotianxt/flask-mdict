@@ -427,6 +427,4 @@ def query_word_lite(word):
             break
     resp = make_response('<hr class="seprator" />'.join(html_contents))
     resp.headers["Access-Control-Allow-Origin"] = "*"
-    if not nohistory and found_word:
-        helper.add_history(word)
     return resp

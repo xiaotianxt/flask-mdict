@@ -28,12 +28,6 @@ Install
     # copy MDICT dictionary into content directory
     cp <mdict> content/
 
-    # install word frequency database from ecdict csv
-    ecdict.sh
-    # or copy current ecdict_wfd.db to your content directory
-    # cp ecdict_wfd.db content/
-
-
 Run
 ----
 ::

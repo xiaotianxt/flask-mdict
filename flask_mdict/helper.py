@@ -2,14 +2,10 @@ import re
 import uuid
 import os.path
 import sqlite3
-import datetime
-import csv
 import logging
 from collections import OrderedDict
 
-from flask import url_for
-
-from . import Config, get_db
+from . import Config
 from .dbdict_query import DBDict
 from .mdict_query2 import IndexBuilder2
 
@@ -19,61 +15,6 @@ logger = logging.getLogger(__name__)
 regex_style = re.compile(r"<style.+?</style>", re.DOTALL | re.IGNORECASE)
 regex_ln = re.compile(r"<(p|br|tr)[^>]*?>", re.IGNORECASE)
 regex_tag = re.compile(r"<[^>]+?>")
-
-def query_word_meta(word):
-    TAGs = {
-        "zk": "中考",
-        "gk": "高考",
-        "ky": "考研",
-        "cet4": "CET-4",
-        "cet6": "CET-6",
-        "gre": "GRE",
-        "toefl": "TOEFL",
-        "ielts": "IELTS",
-    }
-    db = get_db("wfd_db")
-    print(db)
-    if not db:
-        key = {"error": 'Could not found "Word Frequency Database - ecdict_wfd.db"!'}
-    else:
-        sql = "SELECT * FROM ecdict where WORD = ?"
-        cursor = db.execute(sql, (word,))
-        row = next(cursor, None)
-        key = dict(row) if row else {}
-    word_meta = []
-    if key.get("oxford"):
-        word_meta.append(
-            '<a href="https://www.oxfordlearnersdictionaries.com/us/wordlist/english/oxford3000/" target="_blank">'
-            '<img src="%s" style="height:16px" title="Oxford 3000"/>'
-            "</a>" % url_for(".static", filename="Ox3000_Rect1_mod_web.png")
-        )
-    if key.get("collins"):
-        # star = '⭐'
-        star = '<i class="text-warning fas fa-star"></i>'
-        n = int(key["collins"])
-        word_meta.append('<span title="Collins %s star">%s</span>' % (n, star * n))
-    if key.get("tag"):
-        tags = [
-            '<span class="badge badge-pill badge-primary">%s</span>' % TAGs.get(t, t)
-            for t in key["tag"].split(" ")
-        ]
-        word_meta.extend(tags)
-    if key.get("bnc"):
-        word_meta.append(
-            '<a href="http://www.natcorp.ox.ac.uk/" target="_blank">'
-            '<span class="badge badge-pill badge-info" title="BNC: %s">BNC: %s</span>'
-            "</a>" % (key["bnc"], key["bnc"])
-        )
-    if key.get("frq"):
-        word_meta.append(
-            '<a href="https://www.english-corpora.org/coca/" target="_blank">'
-            '<span class="badge badge-pill badge-info" title="COCA: %s">COCA: %s</span>'
-            "</a>" % (key["frq"], key["frq"])
-        )
-    if key.get("error"):
-        word_meta.append('<span class="badge badge-pill badge-danger"></span>')
-
-    return " ".join(word_meta)
 
 
 def init_flask_mdict():
@@ -95,78 +36,6 @@ def init_flask_mdict():
         db.execute(sql)
         db.commit()
     db.close()
-
-
-def mdict_enable(uuid, value=None):
-    db = get_db("app_db")
-    if not db:
-        logger.error("no app db")
-        return
-    c = db.cursor()
-    if value is not None:
-        sql = "INSERT INTO setting (name, value) VALUES(?, ?) ON CONFLICT(name) DO UPDATE SET value = ?;"
-        c.execute(sql, (uuid, value, value))
-        db.commit()
-    else:
-        sql = "SELECT value FROM setting WHERE name = ?;"
-        row = c.execute(sql, (uuid,)).fetchone()
-        if row:
-            return row[0]
-        else:
-            sql = "INSERT INTO setting (name, value) VALUES(?, ?);"
-            c.execute(sql, (uuid, True))
-            db.commit()
-            return True
-
-
-def add_history(word):
-    db = get_db("app_db")
-    if not db:
-        logger.error("no app db")
-        return
-    now = datetime.datetime.now()
-    c = db.cursor()
-    sql = "INSERT INTO history (word, count, last_time) VALUES(?, 1, ?) ON CONFLICT(word) DO UPDATE SET count = count + 1, last_time = ?;"
-    c.execute(sql, (word, now, now))
-    db.commit()
-
-
-def get_history(max_num=500):
-    db = get_db("app_db")
-    if not db:
-        logger.error("no app db")
-        return
-    c = db.cursor()
-    sql = "SELECT * FROM history ORDER BY last_time DESC LIMIT ?;"
-    rows = c.execute(sql, (max_num,)).fetchall()
-    return rows
-
-
-def clear_history():
-    db = get_db("app_db")
-    if not db:
-        logger.error("no app db")
-        return
-    c = db.cursor()
-    sql = "DELETE FROM history;"
-    c.execute(sql)
-    db.commit()
-
-
-def export_history(sio):
-    db = get_db("app_db")
-    if not db:
-        logger.error("no app db")
-        return
-    c = db.cursor()
-    sql = "SELECT * FROM history;"
-    rows = c.execute(sql).fetchall()
-    csv_writer = csv.writer(sio)
-    for row in rows:
-        csv_writer.writerow(
-            (row["word"], row["count"], row["last_time"].rpartition(".")[0])
-        )
-    return sio
 
 
 def init_mdict(mdict_dir, index_dir=None):
