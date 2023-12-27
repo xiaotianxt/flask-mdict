@@ -4,5 +4,9 @@ ecdict.csv
 __pycache__
 build/
 dist/
-content/
+content/*
 .vscode/
+
+venv
+!content/Online\ Etymology\ DictionaryNew.css
+!content/Online\ Etymology\ DictionaryNew.mdx
