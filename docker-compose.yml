@@ -1,10 +1,8 @@
 version: '3'
 services:
   web:
-    build: .
-    command: python app.py
-    volumes:
-      - .:/app
+    container_name: 'flask-mdict'
+    image: xiaotianxt/flask-mdict
     ports:
       - "10572:5000"
     restart: always

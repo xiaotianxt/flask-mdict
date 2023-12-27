@@ -2,6 +2,3 @@
 Flask
 Flask-DebugToolbar
 Flask-WTF
-WTForms-Components
-
-google-translate-for-goldendict
