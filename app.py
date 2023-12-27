@@ -4,6 +4,7 @@ import os
 import logging
 
 from flask import Flask, redirect, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 from flask_mdict import __version__, init_app, mdict_query2
 
@@ -26,6 +27,7 @@ def create_app(mdict_dir="content"):
     app.config["INDEX_DIR"] = None
     app.config["APP_NAME"] = "Flask Mdict"
     app.config["PREFERRED_URL_SCHEME"] = "http" if app.debug else "https"
+    app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
     logger.info(f" * using {app.config['PREFERRED_URL_SCHEME']}://")
 
     init_app(app, url_prefix="/")

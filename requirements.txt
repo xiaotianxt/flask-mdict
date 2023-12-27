@@ -2,3 +2,4 @@
 Flask
 Flask-DebugToolbar
 Flask-WTF
+Werkzeug
