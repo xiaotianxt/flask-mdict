@@ -33,11 +33,13 @@ def create_app(mdict_dir="content"):
 
     @app.route("/favicon.ico")
     def favicon():
-        return redirect(url_for("mdict.static", filename="logo.ico"))
+        return redirect(url_for("mdict.static", filename="logo.ico", _external=True))
 
     @app.route("/privacy")
     def privacy():
-        return redirect(url_for("mdict.static", filename="privacy.html"))
+        return redirect(
+            url_for("mdict.static", filename="privacy.html", _external=True)
+        )
 
     return app
 

@@ -44,10 +44,10 @@ def index():
             {
                 "title": "Search Suggestions",
                 "description": "Search for word suggestions",
-                "href": url_for(".query_part", part=""),
+                "href": url_for(".query_part", part="", _external=True),
                 "examples": [
                     {
-                        "request": url_for(".query_part", part="appl"),
+                        "request": url_for(".query_part", part="appl", _external=True),
                         "response": """{
 "suggestion": [
 "Applied",
@@ -81,10 +81,12 @@ def index():
             {
                 "title": "Search Word",
                 "description": "Search for word definition",
-                "href": url_for(".query_word_lite", word=""),
+                "href": url_for(".query_word_lite", word="", _external=True),
                 "examples": [
                     {
-                        "request": url_for(".query_word_lite", word="apple"),
+                        "request": url_for(
+                            ".query_word_lite", word="apple", _external=True
+                        ),
                         "response": """<div id="class_FA96C0A7-B3C9-33CF-89DB-6FD82264DD07">
     <div class="mdict">
         <link rel="stylesheet" href="http://127.0.0.1:5000/uuid_FA96C0A7-B3C9-33CF-89DB-6FD82264DD07/resource/css/reset.css">
@@ -371,6 +373,7 @@ def query_word_lite():
                             fallback=",".join(fallback),
                             nohistory="true" if nohistory else "false",
                             _anchor=anchor,
+                            _external=True,
                         )
                     )
                 else:
