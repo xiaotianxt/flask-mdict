@@ -182,8 +182,9 @@ def index():
     )
 
 
-@mdict.route("/search/<part>")
-def query_part(part):
+@mdict.route("/search")
+def query_part():
+    part = request.args.get("part", default="", type=str)
     contents = set()
     for uuid, item in get_mdict().items():
         if item["type"] == "app":
@@ -253,8 +254,9 @@ def query_resource(uuid, resource):
         abort(404)
 
 
-@mdict.route("/query/<word>")
-def query_word_lite(word):
+@mdict.route("/query")
+def query_word_lite():
+    word = request.args.get("word", default="", type=str)
     default_uuid = next(iter(get_mdict()))
     uuid = default_uuid
 
