@@ -259,8 +259,7 @@ def query_resource(uuid, resource):
 @mdict.route("/query")
 def query_word_lite():
     word = request.args.get("word", default="", type=str)
-    default_uuid = next(iter(get_mdict()))
-    uuid = default_uuid
+    uuid = "all"
 
     def url_replace(mo):
         abs_url = mo.group(2)
@@ -303,17 +302,9 @@ def query_word_lite():
         return abort(404)
     word = word.strip()
 
-    item = get_mdict().get(default_uuid)
-    if not item:
-        abort(404)
-    items = [item]
-    for f in fallback:
-        if f in get_mdict():
-            items.append(get_mdict().get(f))
-
     html_contents = []
     found_word = False
-    for item in items:
+    for _, item in get_mdict().items():
         # entry and word, load from mdx, db
         cur_uuid = item["uuid"]
         q = item["query"]

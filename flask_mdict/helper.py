@@ -38,6 +38,19 @@ def init_flask_mdict():
     db.close()
 
 
+dict_file_order = [
+    "Online Etymology",
+    "Merriam-Webster",
+]
+
+
+def custom_sort_key(name):
+    for i, n in enumerate(dict_file_order):
+        if n in name:
+            return i
+    return len(dict_file_order)
+
+
 def init_mdict(mdict_dir, index_dir=None):
     mdicts = OrderedDict()
     db_names = {}
@@ -47,6 +60,7 @@ def init_mdict(mdict_dir, index_dir=None):
         for row in rows:
             mdict_setting[row[0]] = row[1] == "1"
     for root, dirs, files in os.walk(mdict_dir, followlinks=True):
+        files.sort(key=custom_sort_key)
         for fname in files:
             if (
                 fname.endswith(".db")

@@ -8,5 +8,6 @@ content/*
 .vscode/
 
 venv
-!content/Online\ Etymology\ DictionaryNew.css
-!content/Online\ Etymology\ DictionaryNew.mdx
+!content/*.mdx
+!content/*.mdd
+!content/*.css
