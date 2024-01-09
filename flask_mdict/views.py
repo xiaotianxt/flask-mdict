@@ -304,7 +304,8 @@ def query_word_lite():
 
     html_contents = []
     found_word = False
-    for _, item in get_mdict().items():
+    items = [item for _, item in get_mdict().items()]
+    for item in items:
         # entry and word, load from mdx, db
         cur_uuid = item["uuid"]
         q = item["query"]
