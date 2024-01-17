@@ -39,7 +39,7 @@ def init_flask_mdict():
 
 
 dict_file_order = [
-    "Online Etymology",
+    "Etymology",
     "Merriam-Webster",
 ]
 
